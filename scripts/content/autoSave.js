@@ -286,13 +286,22 @@ function initializeAutoSave(skipInputFormReload = false, forceRefreshIds = []) {
           }) !== -1;
 
           const newConversationsOrder = oldConversationsOrderHasLongIds
-            ? oldConversationsOrder.map((conv) => {
-              if (typeof conv === 'string') {
+          ? oldConversationsOrder.map((conv) => {
+              if (typeof conv === "string") {
                 return conv?.slice(0, 5);
               }
-              return { ...conv, id: conv.id?.slice(0, 5), conversationIds: conv.conversationIds.map((id) => id?.slice(0, 5)) };
+              return {
+                ...conv,
+                id:
+                  typeof conv.id === "string"
+                    ? conv.id.slice(0, 5)
+                    : conv.id,
+                conversationIds: conv.conversationIds.map((id) =>
+                  id && typeof id === "string" ? id.slice(0, 5) : id
+                ),
+              };
             })
-            : oldConversationsOrder;
+          : oldConversationsOrder;
           chrome.storage.sync.set({
             conversationsOrder: newConversationsOrder,
           }, async () => {
